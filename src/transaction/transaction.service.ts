@@ -14,6 +14,12 @@ interface Summary {
 export class TransactionService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Crea una nueva transacción para el usuario proporcionado.
+   * @param userId - ID del usuario que realiza la transacción.
+   * @param dto - Data Transfer Object que contiene los datos de la nueva transacción.
+   * @returns La transacción recién creada.
+   */
   async create(userId: number, dto: CreateTransactionDto) {
     return this.prisma.transaction.create({
       data: {
@@ -23,6 +29,11 @@ export class TransactionService {
     });
   }
 
+  /**
+   * Obtiene todas las transacciones de un usuario específico.
+   * @param userId - ID del usuario cuyas transacciones se desean obtener.
+   * @returns Lista de transacciones ordenadas por fecha de creación, de más reciente a más antigua.
+   */
   async findAll(userId: number) {
     return this.prisma.transaction.findMany({
       where: { userId },
@@ -30,6 +41,11 @@ export class TransactionService {
     });
   }
 
+  /**
+   * Obtiene un resumen de las transacciones del usuario, agrupadas por tipo.
+   * @param userId - ID del usuario cuyas transacciones se desean resumir.
+   * @returns Objeto resumen con el total de ingresos, gastos y ahorros.
+   */
   async findSummary(userId: number) {
     const summary = await this.prisma.transaction.groupBy({
       by: ['type'],
@@ -46,6 +62,13 @@ export class TransactionService {
     );
   }
 
+  /**
+   * Busca una transacción específica por su ID y usuario.
+   * @param userId - ID del usuario propietario de la transacción.
+   * @param id - ID de la transacción a buscar.
+   * @throws NotFoundException - Si la transacción no se encuentra.
+   * @returns La transacción encontrada.
+   */
   async findOne(userId: number, id: number) {
     const transaction = await this.prisma.transaction.findFirst({
       where: { id, userId },
@@ -56,6 +79,14 @@ export class TransactionService {
     return transaction;
   }
 
+  /**
+   * Actualiza una transacción existente.
+   * @param userId - ID del usuario propietario de la transacción.
+   * @param id - ID de la transacción a actualizar.
+   * @param dto - Data Transfer Object con los nuevos datos de la transacción.
+   * @throws NotFoundException - Si la transacción no se encuentra.
+   * @returns La transacción actualizada.
+   */
   async update(userId: number, id: number, dto: UpdateTransactionDto) {
     // Validar que la transacción exista y pertenezca al usuario
     const existing = await this.prisma.transaction.findFirst({
@@ -71,6 +102,13 @@ export class TransactionService {
     });
   }
 
+  /**
+   * Elimina una transacción existente.
+   * @param userId - ID del usuario propietario de la transacción.
+   * @param id - ID de la transacción a eliminar.
+   * @throws NotFoundException - Si la transacción no se encuentra.
+   * @returns La transacción eliminada.
+   */
   async remove(userId: number, id: number) {
     // Validar que la transacción exista y pertenezca al usuario
     const existing = await this.prisma.transaction.findFirst({
