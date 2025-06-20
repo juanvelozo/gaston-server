@@ -1,6 +1,5 @@
 // src/auth/auth.controller.ts
 import { Body, Controller, Patch, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -8,6 +7,7 @@ import { Public } from './decorator/public.decorator';
 import { GetUser } from './decorator/get-user.decorator';
 import { ChangePasswordDto } from 'src/user/dto/change-password.dto';
 import { UserService } from 'src/user/user.service';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
