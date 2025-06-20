@@ -17,6 +17,14 @@ export class AuthService {
   ) {}
 
   async signup(dto: SignupDto) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (existingUser) {
+      throw new ForbiddenException('El email ya está registrado');
+    }
+
     const hash = await bcrypt.hash(dto.password, 10);
 
     const user = await this.prisma.user.create({
