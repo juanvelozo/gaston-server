@@ -45,7 +45,9 @@ export class AuthService {
     });
 
     // Retornar el token de acceso.
-    return this.signToken(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+    return tokens;
   }
 
   /**
@@ -70,7 +72,9 @@ export class AuthService {
     if (!pwMatches) throw new ForbiddenException('Credenciales incorrectas');
 
     // Retornar el token de acceso.
-    return this.signToken(user.id, user.email);
+    const tokens = await this.getTokens(user?.id, user?.email);
+    await this.updateRefreshTokenHash(user?.id, tokens.refresh_token);
+    return tokens;
   }
 
   /**
@@ -91,5 +95,73 @@ export class AuthService {
 
     // Retornar el token de acceso.
     return { access_token: token };
+  }
+  /**
+   * Genera un par de tokens de acceso y refresco.
+   * @param userId - ID del usuario.
+   * @param email - Email del usuario.
+   * @returns Un objeto que contiene el token de acceso y el token de refresco.
+   */
+  private async getTokens(userId: number, email: string) {
+    const payload = { sub: userId, email };
+
+    const [accessToken, refreshToken] = await Promise.all([
+      // Generar el token de acceso con una caducidad de 1 minuto.
+      this.jwt.signAsync(payload, {
+        secret: this.config.get('JWT_SECRET'),
+        expiresIn: '1m',
+      }),
+      // Generar el token de refresco con una caducidad de 5 minutos.
+      this.jwt.signAsync(payload, {
+        secret: this.config.get('JWT_REFRESH_SECRET'),
+        expiresIn: '5m',
+      }),
+    ]);
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
+  }
+
+  /**
+   * Actualiza el hash del token de refresco en la base de datos.
+   * @param userId - ID del usuario.
+   * @param refreshToken - Token de refresco.
+   */
+  private async updateRefreshTokenHash(userId: number, refreshToken: string) {
+    // Hashear el token de refresco con una iteración de 10.
+    const hash = await bcrypt.hash(refreshToken, 10);
+    // Actualizar el hash del token de refresco en la base de datos.
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: hash },
+    });
+  }
+
+  /**
+   * Método para refrescar un par de tokens.
+   * @param userId - ID del usuario.
+   * @param refreshToken - Token de refresco.
+   * @returns Un objeto que contiene el token de acceso y el token de refresco.
+   */
+  async refreshTokens(email: string, refreshToken: string) {
+    // Buscar al usuario por su email.
+    const user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user || !user.refreshToken) {
+      throw new ForbiddenException('Acceso denegado');
+    }
+
+    // Verificar si el token de refresco coincide con el hash almacenado.
+    const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
+    if (!isValid) throw new ForbiddenException('Token inválido');
+
+    // Generar un nuevo par de tokens.
+    const tokens = await this.getTokens(user.id, user.email);
+    // Actualizar el hash del token de refresco en la base de datos.
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+    // Retornar el par de tokens.
+    return tokens;
   }
 }
