@@ -17,7 +17,6 @@ export class CreateTransactionDto {
   @IsString()
   description?: string;
 
-  @IsString()
-  @IsNotEmpty()
-  category!: string;
+  @IsNumber()
+  categoryId!: number;
 }
