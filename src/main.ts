@@ -16,8 +16,8 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: 'http://localhost:5173', // o el dominio de tu frontend
-  }); // si vas a usar frontend separado
+    origin: 'http://localhost:3001',
+  });
   await app.listen(3000);
 
   const logger = new Logger('Bootstrap');
