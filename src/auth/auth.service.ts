@@ -102,7 +102,7 @@ export class AuthService {
    * @param email - Email del usuario.
    * @returns Un objeto que contiene el token de acceso y el token de refresco.
    */
-  private async getTokens(userId: number, email: string) {
+  async getTokens(userId: number, email: string) {
     const payload = { sub: userId, email };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -129,7 +129,7 @@ export class AuthService {
    * @param userId - ID del usuario.
    * @param refreshToken - Token de refresco.
    */
-  private async updateRefreshTokenHash(userId: number, refreshToken: string) {
+  async updateRefreshTokenHash(userId: number, refreshToken: string) {
     // Hashear el token de refresco con una iteración de 10.
     const hash = await bcrypt.hash(refreshToken, 10);
     // Actualizar el hash del token de refresco en la base de datos.

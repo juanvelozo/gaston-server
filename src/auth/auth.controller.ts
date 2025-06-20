@@ -1,14 +1,20 @@
 // src/auth/auth.controller.ts
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Patch, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Public } from './decorator/public.decorator';
+import { GetUser } from './decorator/get-user.decorator';
+import { ChangePasswordDto } from 'src/user/dto/change-password.dto';
+import { UserService } from 'src/user/user.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+  ) {}
 
   @Post('signup')
   signup(@Body() dto: SignupDto) {
@@ -25,5 +31,10 @@ export class AuthController {
   @Post('refresh')
   refreshTokens(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshTokens(dto.userId.toString(), dto.refreshToken);
+  }
+
+  @Patch('change-password')
+  changePassword(@GetUser('sub') userId: number, @Body() dto: ChangePasswordDto) {
+    return this.userService.changePassword(userId, dto);
   }
 }
