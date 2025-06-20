@@ -18,6 +18,7 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     UserModule,
     CategoryModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
