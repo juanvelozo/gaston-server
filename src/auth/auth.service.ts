@@ -97,7 +97,7 @@ export class AuthService {
     return { access_token: token };
   }
   /**
-   * Genera un par de tokens de acceso y refresco.
+   * Genera tokens de acceso y refresco.
    * @param userId - ID del usuario.
    * @param email - Email del usuario.
    * @returns Un objeto que contiene el token de acceso y el token de refresco.
@@ -125,7 +125,7 @@ export class AuthService {
   }
 
   /**
-   * Actualiza el hash del token de refresco en la base de datos.
+   * Refresca el hash del token en la base de datos.
    * @param userId - ID del usuario.
    * @param refreshToken - Token de refresco.
    */
