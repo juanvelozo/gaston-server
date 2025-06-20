@@ -6,7 +6,13 @@ export interface JwtPayload {
   email: string;
 }
 
-export const GetUser = createParamDecorator((data: unknown, ctx: ExecutionContext): JwtPayload => {
-  const request = ctx.switchToHttp().getRequest<Request & { user: JwtPayload }>();
-  return request.user;
-});
+export const GetUser = createParamDecorator(
+  (key: keyof JwtPayload | undefined, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest<Request & { user: JwtPayload }>();
+
+    if (key) {
+      return request.user?.[key];
+    }
+    return request.user;
+  },
+);
