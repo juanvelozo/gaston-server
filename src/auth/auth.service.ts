@@ -145,9 +145,9 @@ export class AuthService {
    * @param refreshToken - Token de refresco.
    * @returns Un objeto que contiene el token de acceso y el token de refresco.
    */
-  async refreshTokens(email: string, refreshToken: string) {
+  async refreshTokens(userId: number, refreshToken: string) {
     // Buscar al usuario por su email.
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
 
     if (!user || !user.refreshToken) {
       throw new ForbiddenException('Acceso denegado');
