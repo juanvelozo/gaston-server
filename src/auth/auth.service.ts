@@ -74,7 +74,7 @@ export class AuthService {
     // Retornar el token de acceso.
     const tokens = await this.getTokens(user?.id, user?.email);
     await this.updateRefreshTokenHash(user?.id, tokens.refresh_token);
-    return tokens;
+    return { tokens, user };
   }
 
   /**
@@ -163,5 +163,18 @@ export class AuthService {
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
     // Retornar el par de tokens.
     return tokens;
+  }
+  /**
+   * Cierra la sesión del usuario.
+   * @param userId - ID del usuario.
+   * @returns Un objeto que contiene el mensaje de logout exitoso.
+   */
+  async logout(userId: number) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: null },
+    });
+
+    return { message: 'Logout exitoso' };
   }
 }

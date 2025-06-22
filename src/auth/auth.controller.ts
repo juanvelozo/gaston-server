@@ -30,11 +30,16 @@ export class AuthController {
   @Public()
   @Post('refresh')
   refreshTokens(@Body() dto: RefreshTokenDto) {
-    return this.authService.refreshTokens(dto.userId.toString(), dto.refreshToken);
+    return this.authService.refreshTokens(dto.userId, dto.refreshToken);
   }
 
   @Patch('change-password')
   changePassword(@GetUser('sub') userId: number, @Body() dto: ChangePasswordDto) {
     return this.userService.changePassword(userId, dto);
+  }
+
+  @Post('logout')
+  logout(@GetUser('sub') userId: number) {
+    return this.authService.logout(userId);
   }
 }
