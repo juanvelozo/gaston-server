@@ -1,5 +1,5 @@
 // src/auth/auth.controller.ts
-import { Body, Controller, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -8,6 +8,7 @@ import { GetUser } from './decorator/get-user.decorator';
 import { ChangePasswordDto } from 'src/user/dto/change-password.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
+import { JwtGuard } from './guard/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -38,6 +39,7 @@ export class AuthController {
     return this.userService.changePassword(userId, dto);
   }
 
+  @UseGuards(JwtGuard)
   @Post('logout')
   logout(@GetUser('sub') userId: number) {
     return this.authService.logout(userId);
