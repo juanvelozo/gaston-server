@@ -47,7 +47,7 @@ export class AuthService {
     // Retornar el token de acceso.
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
-    return tokens;
+    return { tokens, user };
   }
 
   /**
