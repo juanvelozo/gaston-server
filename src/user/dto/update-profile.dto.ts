@@ -9,8 +9,4 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsUrl()
   profileImage?: string;
-
-  @IsOptional()
-  @IsString()
-  bio?: string;
 }
