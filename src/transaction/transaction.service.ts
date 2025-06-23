@@ -38,6 +38,10 @@ export class TransactionService {
     return this.prisma.transaction.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        category: true,
+        user: true,
+      },
     });
   }
 
@@ -72,6 +76,10 @@ export class TransactionService {
   async findOne(userId: number, id: number) {
     const transaction = await this.prisma.transaction.findFirst({
       where: { id, userId },
+      include: {
+        category: true,
+        user: true,
+      },
     });
     if (!transaction) {
       throw new NotFoundException(`Transacción con ID ${id} no encontrada`);
