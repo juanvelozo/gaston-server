@@ -17,12 +17,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
       const response = exception.getResponse();
 
       if (typeof response === 'object' && response !== null) {
-        const r = response as { message?: string[]; error?: string };
+        const r = response as { message?: string | string[]; error?: string };
 
-        message = r.message ?? message;
+        if (typeof r.message === 'string') {
+          message = [r.message];
+        } else if (Array.isArray(r.message)) {
+          message = r.message;
+        }
+
         errorType = r.error ?? errorType;
-      } else if (typeof response === 'string') {
-        message = [response];
       }
     }
 
