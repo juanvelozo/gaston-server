@@ -9,7 +9,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const req = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message: string | string[] = 'Internal server error';
+    let message: string[] = ['Internal server error'];
     let errorType = 'Error';
 
     if (exception instanceof HttpException) {
@@ -17,12 +17,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
       const response = exception.getResponse();
 
       if (typeof response === 'object' && response !== null) {
-        const r = response as { message?: string | string[]; error?: string };
+        const r = response as { message?: string[]; error?: string };
 
         message = r.message ?? message;
         errorType = r.error ?? errorType;
       } else if (typeof response === 'string') {
-        message = response;
+        message = [response];
       }
     }
 
