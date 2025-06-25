@@ -5,6 +5,16 @@ import * as bcrypt from 'bcrypt';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { AuthService } from 'src/auth/auth.service';
 
+export interface IUser {
+  id: number;
+  email: string;
+  hash: string;
+  fullName: string | null;
+  profileImage: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  refreshToken: string | null;
+}
 @Injectable()
 export class UserService {
   constructor(
@@ -13,9 +23,17 @@ export class UserService {
   ) {}
 
   async getProfile(userId: number) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const user: IUser | null = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
-    return user;
+
+    const safeUser = {
+      id: user?.id,
+      email: user?.email,
+      fullName: user?.fullName,
+      profileImage: user?.profileImage ?? null,
+      createdAt: user?.createdAt,
+    };
+    return safeUser;
   }
 
   async updateProfile(userId: number, dto: UpdateProfileDto) {

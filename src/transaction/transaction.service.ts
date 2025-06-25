@@ -40,7 +40,12 @@ export class TransactionService {
       orderBy: { createdAt: 'desc' },
       include: {
         category: true,
-        user: true,
+        user: {
+          select: {
+            fullName: true,
+            profileImage: true,
+          },
+        },
       },
     });
   }
@@ -78,7 +83,12 @@ export class TransactionService {
       where: { id, userId },
       include: {
         category: true,
-        user: true,
+        user: {
+          select: {
+            fullName: true,
+            profileImage: true,
+          },
+        },
       },
     });
     if (!transaction) {
