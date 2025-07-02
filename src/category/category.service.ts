@@ -20,6 +20,10 @@ export class CategoryService {
     return this.prisma.category.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        transactions: true,
+        user: true,
+      },
     });
   }
 
