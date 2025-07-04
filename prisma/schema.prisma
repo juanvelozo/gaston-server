@@ -38,8 +38,8 @@ model Transaction {
   user   User @relation(fields: [userId], references: [id])
   userId Int
 
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
 }
 
 enum TransactionType {
