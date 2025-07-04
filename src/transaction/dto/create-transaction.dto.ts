@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { TransactionType } from '@prisma/client'; // o definilo aparte
+import { TransactionType } from '@prisma/client';
 
 export class CreateTransactionDto {
   @IsEnum(TransactionType, { message: 'type must be one of: INCOME, EXPENSE, SAVING' })
@@ -17,6 +17,7 @@ export class CreateTransactionDto {
   @IsString()
   description?: string;
 
+  @IsOptional()
   @IsNumber()
   categoryId!: number;
 }

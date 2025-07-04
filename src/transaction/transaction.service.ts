@@ -24,6 +24,7 @@ export class TransactionService {
     return this.prisma.transaction.create({
       data: {
         ...dto,
+        ...(dto.categoryId && { categoryId: dto.categoryId }),
         userId,
       },
     });
