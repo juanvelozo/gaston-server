@@ -21,7 +21,11 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.enableCors({
-    origin: 'http://localhost:3001',
+    origin: [
+      'http://localhost:3001', // desarrollo local
+      'https://gaston-web-client-git-master-juan-velozos-projects.vercel.app/', // producción
+      'https://gaston-web-client-git-develop-juan-velozos-projects.vercel.app', // rama develop
+    ],
   });
   await app.listen(3000);
 
