@@ -30,7 +30,7 @@ async function bootstrap() {
       'https://dev.gaston.app', // desarrollo
     ],
   });
-  await app.listen(3000);
+  await app.listen(3000, '0.0.0.0');
 
   const logger = new Logger('Bootstrap');
   logger.log(`🚀 App running on: http://localhost:3000`);
