@@ -45,7 +45,6 @@ model Transaction {
 enum TransactionType {
   INCOME
   EXPENSE
-  SAVING
 }
 
 model Category {
