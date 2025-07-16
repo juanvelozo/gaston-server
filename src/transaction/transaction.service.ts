@@ -7,7 +7,7 @@ interface Summary {
   [key: string]: number;
   income: number;
   expense: number;
-  saving: number;
+  // saving: number;
 }
 
 @Injectable()
@@ -68,7 +68,7 @@ export class TransactionService {
         acc[curr.type.toLowerCase()] = curr._sum.amount || 0;
         return acc;
       },
-      { income: 0, expense: 0, saving: 0 },
+      { income: 0, expense: 0 },
     );
   }
 
