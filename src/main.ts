@@ -24,7 +24,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3001', // desarrollo local
       'http://localhost:3000', // desarrollo local sin levantar el backend en local
-      'https://gaston-web-client-git-master-juan-velozos-projects.vercel.app/', // producción
+      'https://gaston-web-client-git-master-juan-velozos-projects.vercel.app', // producción
       'https://gaston-web-client-git-develop-juan-velozos-projects.vercel.app', // desarrollo
       'https://gaston.app', // producción
       'https://dev.gaston.app', // desarrollo
