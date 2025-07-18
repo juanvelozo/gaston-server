@@ -62,8 +62,9 @@ export class AuthService {
       where: { email: dto.email },
     });
 
+    if (!user) throw new ForbiddenException('Este usuario no se encuentra registrado.');
     // Verificar si el usuario existe y las credenciales son correctas.
-    if (!user || !(await bcrypt.compare(dto.password, user.hash)))
+    if (!(await bcrypt.compare(dto.password, user.hash)))
       throw new ForbiddenException('Credenciales incorrectas');
 
     // Comprobar si la contraseña coincide con el hash almacenado.
