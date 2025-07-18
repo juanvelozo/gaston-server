@@ -36,19 +36,23 @@ export class TransactionService {
    * @returns Lista de transacciones ordenadas por fecha de creación, de más reciente a más antigua.
    */
   async findAll(userId: number) {
-    return this.prisma.transaction.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        category: true,
-        user: {
-          select: {
-            fullName: true,
-            profileImage: true,
+    return this.prisma.transaction
+      .findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          category: true,
+          user: {
+            select: {
+              fullName: true,
+              profileImage: true,
+            },
           },
         },
-      },
-    });
+      })
+      .catch(() => {
+        throw new NotFoundException('No es posible obtener las transacciones en este momento');
+      });
   }
 
   /**
@@ -62,6 +66,12 @@ export class TransactionService {
       where: { userId },
       _sum: { amount: true },
     });
+
+    if (!summary) {
+      throw new NotFoundException(
+        'No es posible obtener el resumen de transacciones en este momento',
+      );
+    }
 
     return summary.reduce(
       (acc: Summary, curr) => {

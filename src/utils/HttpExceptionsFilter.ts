@@ -9,7 +9,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const req = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message: string[] = ['Internal server error'];
+    let message: string[] = ['Servidor no disponible'];
     let errorType = 'Error';
 
     if (exception instanceof HttpException) {
