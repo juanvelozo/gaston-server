@@ -3,10 +3,28 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { TransformResponseInterceptor } from './utils/interceptorResponse';
 import { HttpExceptionFilter } from './utils/HttpExceptionsFilter';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  });
+  app.use(cookieParser());
+
+  app.enableCors({
+    origin: [
+      'http://localhost:3001/', // desarrollo local
+      'http://localhost:3000/', // desarrollo local sin levantar el backend en local
+      'http://localhost:3001', // desarrollo local
+      'http://localhost:3000', // desarrollo local sin levantar el backend en local
+      'https://gaston-web-client-git-master-juan-velozos-projects.vercel.app', // producción
+      'https://gaston-web-client-git-develop-juan-velozos-projects.vercel.app', // desarrollo
+      'https://gaston.app', // producción
+      'https://dev.gaston.app', // desarrollo
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
 
   app.useGlobalPipes(
@@ -20,16 +38,6 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  app.enableCors({
-    origin: [
-      'http://localhost:3001', // desarrollo local
-      'http://localhost:3000', // desarrollo local sin levantar el backend en local
-      'https://gaston-web-client-git-master-juan-velozos-projects.vercel.app', // producción
-      'https://gaston-web-client-git-develop-juan-velozos-projects.vercel.app', // desarrollo
-      'https://gaston.app', // producción
-      'https://dev.gaston.app', // desarrollo
-    ],
-  });
   await app.listen(3000, '0.0.0.0');
 
   const logger = new Logger('Bootstrap');

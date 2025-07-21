@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '../decorator/get-user.decorator';
+import { Request } from 'express'; // Importar Request para acceder a las cookies
 
 /**
  * Estrategia para manejar la autenticación JWT.
@@ -16,17 +17,24 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
    * @throws Error si JWT_SECRET no está definido en las variables de entorno.
    */
   constructor(config: ConfigService) {
-    // Obtiene el secreto de JWT desde las variables de entorno.
     const jwtSecret = config.get<string>('JWT_SECRET');
 
-    // Verifica si JWT_SECRET está definido.
     if (!jwtSecret) {
       throw new Error('JWT_SECRET no está definido en las variables de entorno');
     }
 
-    // Configura la estrategia de Passport para extraer el token desde el encabezado de autorización.
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: (req: Request) => {
+        if (req && req.cookies && typeof req.cookies === 'object') {
+          const cookies = req.cookies as { [key: string]: string | undefined };
+          const accessToken = cookies['access_token'];
+          if (typeof accessToken === 'string' && accessToken.length > 0) {
+            return accessToken;
+          }
+        }
+        return null;
+      },
+      ignoreExpiration: false,
       secretOrKey: jwtSecret,
     });
   }
