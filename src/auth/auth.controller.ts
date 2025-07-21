@@ -89,16 +89,16 @@ export class AuthController {
   private setCookies(res: Response, accessToken: string, refreshToken: string) {
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
       expires: new Date(Date.now() + 1 * 60 * 1000), // 1 minuto
       priority: 'high',
     });
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
       expires: new Date(Date.now() + 5 * 60 * 2000), // 10 minutos
       priority: 'high',
     });
