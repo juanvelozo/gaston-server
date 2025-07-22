@@ -85,33 +85,36 @@ export class AuthController {
     };
   }
 
-  // Método para establecer cookies
   private setCookies(res: Response, accessToken: string, refreshToken: string) {
+    // Cookie para el Access Token (vida corta)
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      expires: new Date(Date.now() + 1 * 60 * 1000), // 1 minuto
-      priority: 'high',
-path: '/'
-    });
+      secure: true, // `true` en producción (HTTPS), `false` para HTTP local
+      sameSite: 'none', // Necesario para cross-origin, requiere `secure: true`
+      expires: new Date(Date.now() + 1 * 60 * 1000), // Expira en 1 minuto
+      path: '/', // Disponible en todo el dominio
+   });
 
+    // Cookie para el Refresh Token (vida larga)
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      expires: new Date(Date.now() + 5 * 60 * 2000), // 10 minutos
-      priority: 'high',path: '/'
-    });
+      secure: true, // `true` en producción (HTTPS)
+      sameSite: 'none', // Necesario para cross-origin, requiere `secure: true`
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expira en 30 días
+      path: '/', // Disponible en todo el dominio
+   });
   }
 
   private clearCookies(res: Response) {
     const cookieOptions = {
       httpOnly: true,
+      // `secure` y `sameSite` deben coincidir con la forma en que se establecieron las cookies
       secure: true,
       sameSite: 'none' as const,
+      path: '/', // También debe coincidir
     };
     res.clearCookie('access_token', cookieOptions);
     res.clearCookie('refresh_token', cookieOptions);
   }
+
 }
