@@ -93,6 +93,7 @@ export class AuthController {
       sameSite: 'none',
       expires: new Date(Date.now() + 1 * 60 * 1000), // 1 minuto
       priority: 'high',
+path: '/'
     });
 
     res.cookie('refresh_token', refreshToken, {
@@ -100,7 +101,7 @@ export class AuthController {
       secure: true,
       sameSite: 'none',
       expires: new Date(Date.now() + 5 * 60 * 2000), // 10 minutos
-      priority: 'high',
+      priority: 'high',path: '/'
     });
   }
 
