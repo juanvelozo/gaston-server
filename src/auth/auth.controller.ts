@@ -90,19 +90,19 @@ export class AuthController {
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true, // `true` en producción (HTTPS), `false` para HTTP local
-      sameSite: 'lax', // Necesario para cross-origin, requiere `secure: true`
+      sameSite: 'none', // Necesario para cross-origin, requiere `secure: true`
       expires: new Date(Date.now() + 1 * 60 * 1000), // Expira en 1 minuto
       path: '/', // Disponible en todo el dominio
-   });
+    });
 
     // Cookie para el Refresh Token (vida larga)
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: true, // `true` en producción (HTTPS)
-      sameSite: 'lax', // Necesario para cross-origin, requiere `secure: true`
+      sameSite: 'none', // Necesario para cross-origin, requiere `secure: true`
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expira en 30 días
       path: '/', // Disponible en todo el dominio
-   });
+    });
   }
 
   private clearCookies(res: Response) {
@@ -110,11 +110,10 @@ export class AuthController {
       httpOnly: true,
       // `secure` y `sameSite` deben coincidir con la forma en que se establecieron las cookies
       secure: true,
-      sameSite: 'lax' as const,
+      sameSite: 'none' as const,
       path: '/', // También debe coincidir
     };
     res.clearCookie('access_token', cookieOptions);
     res.clearCookie('refresh_token', cookieOptions);
   }
-
 }
