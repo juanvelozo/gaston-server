@@ -18,6 +18,7 @@ async function bootstrap() {
       'http://localhost:3001', // desarrollo local
       'http://localhost:3000', // desarrollo local sin levantar el backend en local
       'https://gastonfinance.vercel.app/', // producción
+      'https://gastonfinance.vercel.app', // producción
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
