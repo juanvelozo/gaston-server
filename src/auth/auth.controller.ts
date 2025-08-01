@@ -30,33 +30,47 @@ export class AuthController {
 
   @Public()
   @Post('signup')
-  async signup(@Body() dto: SignupDto, @Res({ passthrough: true }) res: Response) {
+  async signup(
+    @Req() req: Request,
+    @Body() dto: SignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const { user, tokens } = await this.authService.signup(dto);
-    this.setCookies(res, tokens.access_token, tokens.refresh_token);
+    const enviroment = req.headers['X-enviroment'];
+    const isProd = enviroment === 'prod';
+
+    this.setCookies(res, tokens.access_token, tokens.refresh_token, isProd);
     return { user };
   }
 
   @Public()
   @Post('signin')
-  async signin(@Body() dto: SigninDto, @Res({ passthrough: true }) res: Response) {
+  async signin(
+    @Req() req: Request,
+    @Body() dto: SigninDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const { userId, tokens } = await this.authService.signin(dto);
-    this.setCookies(res, tokens.access_token, tokens.refresh_token);
+    const enviroment = req.headers['X-enviroment'];
+    const isProd = enviroment === 'prod';
+
+    this.setCookies(res, tokens.access_token, tokens.refresh_token, isProd);
     return { userId };
   }
 
   @Public()
   @Post('refresh')
   async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    console.log('cookies', req.cookies);
-
     const cookies = req.cookies as { [key: string]: string | undefined };
     const refreshToken = cookies['refresh_token'];
+    const enviroment = req.headers['X-enviroment'];
+    const isProd = enviroment === 'prod';
 
     if (!refreshToken || typeof refreshToken !== 'string') {
       throw new ForbiddenException('Refresh token no proporcionado o inválido');
     }
     const tokens = await this.authService.refreshTokens(refreshToken); // Asume que el servicio extrae userId del token
-    this.setCookies(res, tokens.access_token, tokens.refresh_token);
+    this.setCookies(res, tokens.access_token, tokens.refresh_token, isProd);
     return { message: 'Tokens refreshed successfully' }; // No devuelve tokens en el body
   }
 
@@ -85,13 +99,13 @@ export class AuthController {
     };
   }
 
-  private setCookies(res: Response, accessToken: string, refreshToken: string) {
+  private setCookies(res: Response, accessToken: string, refreshToken: string, isProd: boolean) {
     // Cookie para el Access Token (vida corta)
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true, // `true` en producción (HTTPS), `false` para HTTP local
       sameSite: 'none', // Necesario para cross-origin, requiere `secure: true`
-      expires: new Date(Date.now() + 1 * 60 * 1000), // Expira en 1 minuto
+      expires: isProd ? new Date(Date.now() + 1 * 60 * 1000) : undefined, // Expira en 1 minuto
       path: '/', // Disponible en todo el dominio
     });
 
@@ -100,7 +114,7 @@ export class AuthController {
       httpOnly: true,
       secure: true, // `true` en producción (HTTPS)
       sameSite: 'none', // Necesario para cross-origin, requiere `secure: true`
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expira en 30 días
+      expires: isProd ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : undefined, // Expira en 30 días
       path: '/', // Disponible en todo el dominio
     });
   }
