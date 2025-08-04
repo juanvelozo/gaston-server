@@ -13,16 +13,13 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'http://localhost:3001/', // desarrollo local
-      'http://localhost:3000/', // desarrollo local sin levantar el backend en local
       'http://localhost:3001', // desarrollo local
       'http://localhost:3000', // desarrollo local sin levantar el backend en local
-      'https://gastonfinance.vercel.app/', // producción
       'https://gastonfinance.vercel.app', // producción
       'https://5kzti-biaaa-aaaae-abmaq-cai.icp0.io', // producción mainnet
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-environment'],
     credentials: true,
   });
 

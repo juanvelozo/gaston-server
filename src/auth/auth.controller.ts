@@ -36,8 +36,8 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { user, tokens } = await this.authService.signup(dto);
-    const enviroment = req.headers['X-enviroment'];
-    const isProd = enviroment === 'prod';
+    const environment = req.headers['X-environment'];
+    const isProd = environment === 'prod';
 
     this.setCookies(res, tokens.access_token, tokens.refresh_token, isProd);
     return { user };
@@ -51,8 +51,8 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { userId, tokens } = await this.authService.signin(dto);
-    const enviroment = req.headers['X-enviroment'];
-    const isProd = enviroment === 'prod';
+    const environment = req.headers['X-environment'];
+    const isProd = environment === 'prod';
 
     this.setCookies(res, tokens.access_token, tokens.refresh_token, isProd);
     return { userId };
@@ -63,8 +63,8 @@ export class AuthController {
   async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cookies = req.cookies as { [key: string]: string | undefined };
     const refreshToken = cookies['refresh_token'];
-    const enviroment = req.headers['X-enviroment'];
-    const isProd = enviroment === 'prod';
+    const environment = req.headers['X-environment'];
+    const isProd = environment === 'prod';
 
     if (!refreshToken || typeof refreshToken !== 'string') {
       throw new ForbiddenException('Refresh token no proporcionado o inválido');
