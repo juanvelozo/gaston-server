@@ -20,6 +20,7 @@ import { ChangePasswordDto } from 'src/user/dto/change-password.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './guard/jwt.guard';
+import { getEnvironmentHeader } from 'src/utils/getEnvironmentFromHeaders';
 
 @Controller('auth')
 export class AuthController {
@@ -36,7 +37,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { user, tokens } = await this.authService.signup(dto);
-    const environment = req.headers['X-environment'];
+    const environment = getEnvironmentHeader(req);
     const isProd = environment === 'prod';
 
     this.setCookies(res, tokens.access_token, tokens.refresh_token, isProd);
@@ -51,7 +52,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { userId, tokens } = await this.authService.signin(dto);
-    const environment = req.headers['X-environment'];
+    const environment = getEnvironmentHeader(req);
     const isProd = environment === 'prod';
 
     this.setCookies(res, tokens.access_token, tokens.refresh_token, isProd);
@@ -63,7 +64,7 @@ export class AuthController {
   async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const cookies = req.cookies as { [key: string]: string | undefined };
     const refreshToken = cookies['refresh_token'];
-    const environment = req.headers['X-environment'];
+    const environment = getEnvironmentHeader(req);
     const isProd = environment === 'prod';
 
     if (!refreshToken || typeof refreshToken !== 'string') {
