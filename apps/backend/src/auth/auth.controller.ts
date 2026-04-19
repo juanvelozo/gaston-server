@@ -17,17 +17,13 @@ import { SigninDto } from './dto/signin.dto';
 import { Public } from './decorator/public.decorator';
 import { GetUser, JwtPayload } from './decorator/get-user.decorator';
 import { ChangePasswordDto } from 'src/user/dto/change-password.dto';
-import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './guard/jwt.guard';
 import { getEnvironmentHeader } from 'src/utils/getEnvironmentFromHeaders';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private userService: UserService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Public()
   @Post('signup')
@@ -70,21 +66,21 @@ export class AuthController {
     if (!refreshToken || typeof refreshToken !== 'string') {
       throw new ForbiddenException('Refresh token no proporcionado o inválido');
     }
-    const tokens = await this.authService.refreshTokens(refreshToken); // Asume que el servicio extrae userId del token
+    const tokens = await this.authService.refreshTokens(refreshToken);
     this.setCookies(res, tokens.access_token, tokens.refresh_token, isProd);
-    return { message: 'Tokens refreshed successfully' }; // No devuelve tokens en el body
+    return { message: 'Tokens refreshed successfully' };
   }
 
   @Patch('change-password')
   changePassword(@GetUser('sub') userId: number, @Body() dto: ChangePasswordDto) {
-    return this.userService.changePassword(userId, dto);
+    return this.authService.changePassword(userId, dto);
   }
 
   @UseGuards(JwtGuard)
   @Post('logout')
   async logout(@GetUser('sub') userId: number, @Res({ passthrough: true }) res: Response) {
     await this.authService.logout(userId);
-    this.clearCookies(res); // Limpia las cookies al cerrar sesión
+    this.clearCookies(res);
     return { message: 'Logout exitoso' };
   }
 
@@ -101,32 +97,29 @@ export class AuthController {
   }
 
   private setCookies(res: Response, accessToken: string, refreshToken: string, isProd: boolean) {
-    // Cookie para el Access Token (vida corta)
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: true, // `true` en producción (HTTPS), `false` para HTTP local
-      sameSite: 'none', // Necesario para cross-origin, requiere `secure: true`
-      expires: isProd ? new Date(Date.now() + 1 * 60 * 1000) : undefined, // Expira en 1 minuto
-      path: '/', // Disponible en todo el dominio
+      secure: true,
+      sameSite: 'none',
+      expires: isProd ? new Date(Date.now() + 1 * 60 * 1000) : undefined,
+      path: '/',
     });
 
-    // Cookie para el Refresh Token (vida larga)
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: true, // `true` en producción (HTTPS)
-      sameSite: 'none', // Necesario para cross-origin, requiere `secure: true`
-      expires: isProd ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : undefined, // Expira en 30 días
-      path: '/', // Disponible en todo el dominio
+      secure: true,
+      sameSite: 'none',
+      expires: isProd ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : undefined,
+      path: '/',
     });
   }
 
   private clearCookies(res: Response) {
     const cookieOptions = {
       httpOnly: true,
-      // `secure` y `sameSite` deben coincidir con la forma en que se establecieron las cookies
       secure: true,
       sameSite: 'none' as const,
-      path: '/', // También debe coincidir
+      path: '/',
     };
     res.clearCookie('access_token', cookieOptions);
     res.clearCookie('refresh_token', cookieOptions);

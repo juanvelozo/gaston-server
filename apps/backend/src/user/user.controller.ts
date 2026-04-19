@@ -4,11 +4,15 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { AuthService } from '../auth/auth.service';
 
 @UseGuards(JwtGuard)
 @Controller('user')
 export class UserController {
-  constructor(private service: UserService) {}
+  constructor(
+    private service: UserService,
+    private authService: AuthService,
+  ) {}
 
   @Get('profile')
   getProfile(@GetUser('sub') userId: number) {
@@ -22,6 +26,6 @@ export class UserController {
 
   @Patch('change-password')
   changePassword(@GetUser('sub') userId: number, @Body() dto: ChangePasswordDto) {
-    return this.service.changePassword(userId, dto);
+    return this.authService.changePassword(userId, dto);
   }
 }
