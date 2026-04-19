@@ -10,7 +10,6 @@ export interface IUser {
   email: string;
   hash: string;
   fullName: string | null;
-  profileImage: string | null;
   createdAt: Date;
   updatedAt: Date;
   refreshToken: string | null;
@@ -30,7 +29,6 @@ export class UserService {
       id: user?.id,
       email: user?.email,
       fullName: user?.fullName,
-      profileImage: user?.profileImage ?? null,
       createdAt: user?.createdAt,
     };
     return safeUser;

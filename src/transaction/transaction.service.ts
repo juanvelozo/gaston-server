@@ -45,7 +45,6 @@ export class TransactionService {
           user: {
             select: {
               fullName: true,
-              profileImage: true,
             },
           },
         },
@@ -97,7 +96,6 @@ export class TransactionService {
         user: {
           select: {
             fullName: true,
-            profileImage: true,
           },
         },
       },
